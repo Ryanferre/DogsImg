@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corazones e Carinho</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: white;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .container {
+            position: absolute;
+            width: 100%; /* Garante que ocupe toda a largura da tela */
+            height: 100%; /* Garante que ocupe toda a altura da tela */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            overflow: hidden; /* Impede que corações saiam da div */
+            pointer-events: none; /* Previne interações na área dos corações */
+        }
+
+        .OnmouseEfetc {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        img {
+            width: 40vmax;
+            transition: transform 0.3s ease;
+            z-index: 0;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 3rem; /* Tamanho do emoji de coração */
+            animation: fall 5s linear infinite;
+            opacity: 0;
+        }
+
+        /* Animação de queda e rotação */
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .OnmouseEfetc {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="container" class="container"></div>
+<h1 class="textTitle">De um carinho em movimento circular mouse proximo ao fucinho ou deslize com o dedo</h1>
+
+<div class="OnmouseEfetc">
+    <img class="Img-dog" src="https://github.com/Ryanferre/DogsImg/blob/main/istockphoto-1331993155-612x612.png?raw=true" />
+</div>
+
+<script>
+    const Img = document.querySelector(".Img-dog");
+    let intervaloCorações; // Variável para armazenar o intervalo
+    let coraçõesGerados = false; // Controle para verificar se os corações já estão sendo gerados
+
+    const div = document.querySelector(".OnmouseEfetc");
+    const container = document.getElementById('container');  // Contêiner onde os corações serão exibidos
+
+    div.addEventListener("mouseover", OnmouseEventEnter);
+    div.addEventListener("mouseout", OnmouseEventCloser);
+    div.addEventListener("touchstart", TouchStartEvt);
+    div.addEventListener("touchend", TouchEndEvt);
+
+    function TouchStartEvt(e) {
+        startX = event.touches[0].clientX;
+        startY = event.touches[0].clientY;
+        OnmouseEventEnter();
+    }
+
+    function TouchEndEvt(event) {
+        OnmouseEventCloser();
+    }
+
+    function criarCoracao() {
+        container.style.display = 'flex';
+
+        // Obtém a div OnmouseEfetc e suas dimensões
+        const divEfeito = document.querySelector(".OnmouseEfetc");
+        const rect = divEfeito.getBoundingClientRect(); // Pega posição e tamanho da div
+
+        // Cria o coração
+        const coracao = document.createElement('div');
+        coracao.classList.add('heart');
+        coracao.textContent = '❤️';
+
+        // Define posição aleatória dentro da div OnmouseEfetc
+        const posX = Math.random() * rect.width; // Agora está limitado ao tamanho da div
+        coracao.style.left = `${posX}px`; // Garantir que o coração não ultrapasse a div
+        coracao.style.top = `-100px`; // Posição inicial acima da div
+        coracao.style.animationDelay = `${Math.random() * 3}s`;
+
+        // Adiciona o coração ao container
+        container.appendChild(coracao);
+
+        // Remove o coração após a animação
+        coracao.addEventListener('animationend', () => {
+            coracao.remove();
+        });
+    }
+
+    // Função para iniciar o efeito dos corações
+    function OnmouseEventEnter() {
+        Img.src = "https://github.com/Ryanferre/DogsImg/blob/main/animal-face-drawings-20.png?raw=true";
+        if (!coraçõesGerados) {  // Só começa a gerar se não tiver começado já
+            intervaloCorações = setInterval(criarCoracao, 500); // Gerar corações a cada 500ms
+            coraçõesGerados = true;
+        }
+    }
+
+    // Função para parar o efeito dos corações
+    function OnmouseEventCloser() {
+        const Titletext = document.querySelector(".textTitle");
+        Img.src = "https://github.com/Ryanferre/DogsImg/blob/main/istockphoto-1331993155-612x612.png?raw=true";
+        clearInterval(intervaloCorações); // Para a criação dos corações quando o mouse sai
+        coraçõesGerados = false;  // Reseta o controle de corações gerados
+        setTimeout(() => {
+            container.style.display = 'none';
+            Titletext.textContent = 'O dog se sentiu abandonado porque você deixou de dar carinho. Você não poderá mais vê-lo.';
+            Img.src = '';
+        }, 3000);
+    }
+</script>
+</body>
+</html>
